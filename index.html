@@ -64,7 +64,9 @@
 
 		.grid-stack {
 			background: lightgoldenrodyellow;
-			background: lightblue;
+//			background: lightblue;
+			background: white;
+			border: 1px solid rgb(0, 135, 247);
 		}
 
 		.grid-stack-item-content {
@@ -76,7 +78,7 @@
 			.svg-pan-zoom-control {display: none;}
 			.no-print {display: none;}
 			#dragHandle {display: none;}
-			.grid-stack {background: none;}
+			.grid-stack {background: none; border:none;}
 			.grid-stack .grid-stack-item .grid-stack-item-content,
 			.grid-stack .grid-stack-item .placeholder-content { border: none; }
 		}
@@ -130,7 +132,7 @@
 <div class="container" style="width:1152px;">
 	<div class="row no-print">
 		<div align=center>
-			<a class="btn btn-default" id="add-new-Text">Add Text</a>
+			<a class="btn btn-default" id="add-new-Text">Add Textarea</a>
 			<a class="btn btn-default" id="add-new-Control">Add Control</a>
 			<a class="btn btn-default" id="save-HTML">Save as HTML</a>
 			<a class="btn btn-default" href=demo1.html target=_blank>Demo1</a>
@@ -207,8 +209,9 @@
 	  
 	  const classCollection = {};
 	  
-	  const plain = styleTag.innerHTML;
-	  const regex = /\.([^\s{]+)[\s]*\{([\s\S]+?)\}/;
+	  const plain = styleTag.innerHTML.replace(/\s/g,'').toLowerCase();
+
+	  const regex = /([^\s{]+)[\s]*\{([\s\S]+?)\}/;
 	  const propertyRegex = /([\w\-]+)[\s]*:[\s]*([^;]+)/;
 	  const result = plain.match( new RegExp( regex, 'g' ) );
 	  if ( result ) {
@@ -223,12 +226,12 @@
 	      
 		  subclass = classResult[ 1 ].split(','); // Baoohng: Multiple classes, one style
 		  subclass.forEach ( sc => {
+			sc = sc.replace(/^\./,'');
 			sc = sc.replace(/.*cls/,'cls');
 			if (!classCollection[ sc ]) {
 		      	classCollection[ sc ] = properties;
 			} else {
 				classCollection[ sc ] = Object.assign(classCollection[sc], properties);
-// console.log(classCollection[sc]);
 		    }
 		  });
 	    } );
@@ -340,7 +343,7 @@
 			if (myType == "plot-box") {
 				var images = myFile.previewElement.querySelectorAll("[data-dz-thumbnail]");
 				if (images[0].src.match(/^data:image\/svg/)) {
-					svg = atob(images[0].src.replace(/^data:image\/.*;base64,/, ""));
+					svg = decodeURIComponent(escape(atob(images[0].src.replace(/^data:image\/.*;base64,/, ""))));
 				} else {
 					svg = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><image width="600" height="600" xlink:href="'+images[0].src+'"/></svg>';
 				}
@@ -350,6 +353,7 @@
 	
 			imageId = "image"+num; 
 			var wm=20, hm=20;
+
 			svg = svg.replace(/(\r\n|\n|\r)/gm,"").replace(/\s+/gm, " ");
 
 			if (svg.match(/viewBox=["|'][0-9.]+\s+[0-9.]+\s+([0-9.]+)\s+([0-9.]+)/)) {
@@ -368,23 +372,25 @@
 					hm = 800;
 				}
 			}
+//console.log(svg)
 console.log('width='+wm+' height='+hm);
 
 			svg = svg.replace(/.*?<svg[^>]+>/i, '<svg xmlns="http://www.w3.org/2000/svg" id="'+imageId+'" style="display: inline; width: inherit; min-width: inherit; max-width: inherit; height: inherit; min-height: inherit; max-height: inherit; " width="'+wm+'" height="'+hm+'" viewBox="0 0 '+wm+' '+hm+'" version="1.1">');
-//console.log(svg)
 
 			svg = svg.replace(/<g +id=\"svg-pan-zoom-controls\".+/, '<\/svg>').replace(/<g[^>]+svg-pan-zoom_viewport[^>]+>/, '');
 
-/*
 			svg = svg.replace(/clipPath id=\"/ig, 'clipPath id=\"'+num);
+
+// Remove white background to make it transparent
 			svg = svg.replace(/<path fill=\"#FFF\"[^>]+d=\"[^>]*M[^>]+h[^>]+v[^>]+H[^>]+z\"\/>/g,"");
 			svg = svg.replace(/<path fill=\"rgb\(255,255,255\)\"[^>]+d=\"[^>]*M[^>]+L[^>]+L[^>]+L[^>]+Z\"\/>/,"");
 			svg = svg.replace(/<rect fill=\"rgb\(255,255,255\)\"[^>]+x=[^>]+\"\/>/,"");
 // R: <rect x="0" y="0" width="468" height="468" style="fill:rgb(100%,100%,100%);fill-opacity:1;stroke:none;"/>
-//			svg = svg.replace(/<rect x=\"0\" y=\"0\"[^>]+style=\"fill:rgb\(100\%,100\%,100\%\);fill-opacity:1;[^>]+\"\/>/g,"");
+			svg = svg.replace(/<rect x=\"0\" y=\"0\"[^>]+style=\"fill:rgb\(100\%,100\%,100\%\);fill-opacity:1;[^>]+\"\/>/g,"");
 			svg = svg.replace(/fill:rgb\(100\%,100\%,100\%\);fill-opacity:1;/g,"fill:rgb\(100\%,100\%,100\%\);fill-opacity:0;");
-//			svg = svg.replace(/<rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'\/>/g,"");
-*/
+			svg = svg.replace(/<rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'\/>/g,"");
+
+			svg = svg.replace(/background:\s+white;/g,"");
 
 
 
@@ -404,17 +410,21 @@ console.log('width='+wm+' height='+hm);
 			var el = this.grid.addWidget($('<div class=image_div id='+imageId+'z style="z-index:'+initZindex+';"><div class="grid-stack-item-content col-xs-4"><div class="tinymce-body" id='+figureTitle+' align="left"  onclick="addEditor\('+figureTitle+'\);this.focus\(\);">'+textHint+'</div><div id="'+imageId+'_container" class='+myType+' style="width: 100%; height: 100%; ">'+svg+'</div></div><div id="dragHandle"></div></div>'), node.x, node.y, node.width, node.height);
 
 			num += 1;
-			$('#list-1').append('<li id='+imageId+'z_li style="float:left;margin:2px;padding:2px;background:lightblue;">'+imageId+'z</li>');
+			$('#list-1').append('<li id='+imageId+'z_li style="float:left;margin:2px;padding:4px;background:rgb(0, 135, 247);color:white;border-radius: 4px;">'+imageId+'z</li>');
 
 			$('#'+imageId+'z_li').hover(
 				function () {
 // Baohong: textContent is the text in <li> tag
 					div_id = this.textContent;
 					$('#'+div_id).css("background-color", 'lightgoldenrodyellow');
+					$('#'+div_id+'_li').css("background-color", 'lightgoldenrodyellow');
+					$('#'+div_id+'_li').css("color", 'black');
 				},
 				function () {
 					div_id = this.textContent;
 					$('#'+div_id).css("background-color", 'transparent');
+					$('#'+div_id+'_li').css("background-color", 'rgb(0, 135, 247)');
+					$('#'+div_id+'_li').css("color", 'white');
 				}
 			);
 
@@ -423,10 +433,28 @@ console.log('width='+wm+' height='+hm);
 			const styles = parseStyles( svgobj.querySelector( 'style' ) );
 			const elements = svgobj.querySelectorAll( '[class]' );
 
+// console.log(styles);
 			for ( let j = 0; j < elements.length; j += 1 ) {
 				applyStyles( elements[ j ], styles );
 			}
-//			$('#'+imageId).find("style").remove();
+
+// R SVGs
+			for (var sty in styles) {
+				if (sty == "circle" || sty == "line" || sty == "path" || sty == "polygon" || sty == "polyline" || sty == "rect") {
+					shapes = svgobj.querySelectorAll(sty);	
+					for (var j=0; j< shapes.length; j++) {
+						Object.keys(styles[sty]).forEach( prop => {
+// console.log(prop+"=>"+shapes[j].style[prop]);
+							if (!shapes[j].style[prop]) {
+								shapes[j].style[prop] = styles[sty][prop];
+							}
+						} );
+					}
+				}
+		    }
+
+// remove global style definition as they are shared among SVGs
+			$('#'+imageId).find("style").remove();
 
 // console.log(svgobj);
 			
