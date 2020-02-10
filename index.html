@@ -132,7 +132,7 @@
 <div class="container" style="width:1152px;">
 	<div class="row no-print">
 		<div align=center>
-			<a class="btn btn-default" id="add-new-Text">Add Textarea</a>
+			<a class="btn btn-default" id="add-new-Text">Add Text Box</a>
 			<a class="btn btn-default" id="add-new-Control">Add Control</a>
 			<a class="btn btn-default" id="save-HTML">Save as HTML</a>
 			<a class="btn btn-default" href=demo1.html target=_blank>Demo1</a>
@@ -150,7 +150,7 @@
 	<div class="row no-print" style="padding-top:5px">
 		<div align=center class="col-xs-4" style="height:200px">
 			<FORM class="dropzone needsclick" id="dropzoneUpload" action="/">
-			<div class="dz-message needsclick">Drop a SVG (high resolution), JPEG, GIF or PNG file here or click to upload. Click "Add Text" to add a text box to the canvas. Click and select text to format. Note: use open-source tool <b>Inkscape</b> (https://inkscape.org) to convert other formats to one of the acceptable formats, preferably SVG.</div>
+			<div class="dz-message needsclick">Drop a SVG (high resolution), JPEG, GIF or PNG file here or click here to upload. Click "Add Text Box" to add a text input box to the canvas. Click and select text to format. Note: use open-source tool <b>Inkscape</b> (https://inkscape.org) to convert other formats to one of the acceptable formats, preferably SVG.</div>
 			</FORM>
 		</div>
 		<div align=center class="col-xs-4">
@@ -379,6 +379,7 @@ console.log('width='+wm+' height='+hm);
 
 			svg = svg.replace(/<g +id=\"svg-pan-zoom-controls\".+/, '<\/svg>').replace(/<g[^>]+svg-pan-zoom_viewport[^>]+>/, '');
 
+			svg = svg.replace(/glyph(\d+)-(\d+)/ig, 'glyph-'+num+'-$1-$2');
 			svg = svg.replace(/clipPath id=\"/ig, 'clipPath id=\"'+num);
 
 // Remove white background to make it transparent
@@ -565,20 +566,20 @@ console.log('width='+wm+' height='+hm);
 <html>
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" href="https://baohongz.github.io/canvasDesigner/dist/bootstrap.min.css">
-	<link rel="stylesheet" href="https://baohongz.github.io/canvasDesigner/dist/gridstack.css"/>
-	<link rel="stylesheet" href="https://baohongz.github.io/canvasDesigner/dist/trash.css"/>
-	<link rel="stylesheet" href="https://baohongz.github.io/canvasDesigner/dist/dropzone.css">
-	<link rel="stylesheet" href="https://baohongz.github.io/canvasDesigner/dist/savehtml.css">
+	<link rel="stylesheet" href="https://baohongz.github.io/canvasDesigner2/dist/bootstrap.min.css">
+	<link rel="stylesheet" href="https://baohongz.github.io/canvasDesigner2/dist/gridstack.css"/>
+	<link rel="stylesheet" href="https://baohongz.github.io/canvasDesigner2/dist/trash.css"/>
+	<link rel="stylesheet" href="https://baohongz.github.io/canvasDesigner2/dist/dropzone.css">
+	<link rel="stylesheet" href="https://baohongz.github.io/canvasDesigner2/dist/savehtml.css">
 
-	<script src="https://baohongz.github.io/canvasDesigner/dist/jquery.min.js"></script>
-	<script src="https://baohongz.github.io/canvasDesigner/dist/jquery-ui.min.js"></script>
-	<script src="https://baohongz.github.io/canvasDesigner/dist/bootstrap.min.js"></script>
-	<script src="https://baohongz.github.io/canvasDesigner/dist/lodash.min.js"></script>
-	<script src="https://baohongz.github.io/canvasDesigner/dist/gridstack.js"></script>
-	<script src="https://baohongz.github.io/canvasDesigner/dist/gridstack.jQueryUI.js"></script>
-	<script src="https://baohongz.github.io/canvasDesigner/dist/dropzone.js"></script>
-	<script src="https://baohongz.github.io/canvasDesigner/dist/svg-pan-zoom.js"></script>
+	<script src="https://baohongz.github.io/canvasDesigner2/dist/jquery.min.js"></script>
+	<script src="https://baohongz.github.io/canvasDesigner2/dist/jquery-ui.min.js"></script>
+	<script src="https://baohongz.github.io/canvasDesigner2/dist/bootstrap.min.js"></script>
+	<script src="https://baohongz.github.io/canvasDesigner2/dist/lodash.min.js"></script>
+	<script src="https://baohongz.github.io/canvasDesigner2/dist/gridstack.js"></script>
+	<script src="https://baohongz.github.io/canvasDesigner2/dist/gridstack.jQueryUI.js"></script>
+	<script src="https://baohongz.github.io/canvasDesigner2/dist/dropzone.js"></script>
+	<script src="https://baohongz.github.io/canvasDesigner2/dist/svg-pan-zoom.js"></script>
 
 	<style type="text/css">
 		.grid-stack .grid-stack-placeholder > .placeholder-content {
