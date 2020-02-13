@@ -351,7 +351,7 @@
 				svg = '<svg xmlns="http://www.w3.org/2000/svg"><g fill=white stroke=white stroke-width=0><circle cx=0 cy=0 r=1/></g></svg>';
 			}
 	
-			imageId = "image"+num; 
+			imageId = "i_m_g"+num; 
 			var wm=20, hm=20;
 
 			svg = svg.replace(/(\r\n|\n|\r)/gm,"").replace(/\s+/gm, " ");
@@ -379,8 +379,15 @@ console.log('width='+wm+' height='+hm);
 
 			svg = svg.replace(/<g +id=\"svg-pan-zoom-controls\".+/, '<\/svg>').replace(/<g[^>]+svg-pan-zoom_viewport[^>]+>/, '');
 
+// Avoid components with same names from different SVG files
 			svg = svg.replace(/glyph(\d+)-(\d+)/ig, 'glyph-'+num+'-$1-$2');
-			svg = svg.replace(/clipPath id=\"/ig, 'clipPath id=\"'+num);
+
+			svg = svg.replace(/clipPath id=\"clip(\d+)\"/ig, 'clipPath id=\"clip-'+num+'-$1\"');
+			svg = svg.replace(/clip-path=\"url\(#clip(\d+)\)\"/ig, 'clip-path=\"url\(#clip-'+num+'-$1\)\"');
+
+			svg = svg.replace(/id=\"path(\d+)\"/ig, 'id=\"path-'+num+'-$1\"');
+//console.log(svg);
+
 
 // Remove white background to make it transparent
 			svg = svg.replace(/<path fill=\"#FFF\"[^>]+d=\"[^>]*M[^>]+h[^>]+v[^>]+H[^>]+z\"\/>/g,"");
@@ -474,9 +481,10 @@ console.log('width='+wm+' height='+hm);
 
 		$('#add-new-Control').click( function () {
 			for (var i=1; i<num; i++) {
-				var myImg = "image"+i;
+				var myImg = "i_m_g"+i;
 				var myContainer = myImg + "_container";
-// console.log(document.getElementById(myContainer).classList);
+console.log(myImg);
+console.log(document.getElementById(myImg));
 				if (document.getElementById(myImg) == null || document.getElementById(myContainer).classList.contains("text-box")) {
 					continue;
 				}
@@ -538,7 +546,7 @@ console.log('width='+wm+' height='+hm);
 //			text += '<div id=locsize style="display:none;">' + JSON.stringify(locsize) + '</div>';
 
 			for (var i=1; i<num; i++) {
-				var myImg = "image"+i;
+				var myImg = "i_m_g"+i;
 				if (document.getElementById(myImg) == null) {
 					continue;
 				}
@@ -643,7 +651,7 @@ console.log('width='+wm+' height='+hm);
 
 
 	this.addSVG = function ( mysvg, num ) {
-		imageId = "image"+num; 
+		imageId = "i_m_g"+num; 
 		var svg = mysvg;
 
 		svg.match(/width="(\d+)/);
@@ -669,7 +677,7 @@ console.log('width='+wm+' height='+hm);
 
 	var CTMs = [];
 	for (var i=1; i<=locsize['num']; i++) {
-		var myImg = "image"+i;
+		var myImg = "i_m_g"+i;
 		if (document.getElementById(myImg) == null) {
 			continue;
 		}
@@ -677,7 +685,7 @@ console.log('width='+wm+' height='+hm);
 	}
 
 	for (var i=1; i<=locsize['num']; i++) {
-		var myImg = "image"+i;
+		var myImg = "i_m_g"+i;
 		if (document.getElementById(myImg) == null) {
 			continue;
 		}
